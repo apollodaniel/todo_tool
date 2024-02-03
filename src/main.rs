@@ -40,10 +40,10 @@ fn main() -> Result<(), Box<(dyn Error)>>{
                 event::KeyCode::Enter=>{
                     let item = items.get(list_state.selected().unwrap()).unwrap();
                     if item.marked {
-                        todo::process("unmark", vec![&item.content]);
+                        todo::execute_command(todo::TodoCommand::Unmark(item.id))?;
                         items = todo::list().unwrap();
                     }else{
-                        todo::process("mark", vec![&item.content]);
+                        todo::execute_command(todo::TodoCommand::Mark(item.id))?;
                         items = todo::list().unwrap();
                     }
                 },
