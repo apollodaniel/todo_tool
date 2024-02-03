@@ -1,67 +1,68 @@
 use std::error::Error;
 
-use crossterm::{event::{self, KeyEvent}, execute, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}};
+use app::{App, AppState};
+use crossterm::{event::{self, KeyEvent, KeyModifiers}, execute, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}};
+use events::EventHandler;
 use ratatui::{backend::CrosstermBackend, style::{Color, Modifier, Style}, widgets::{Block, Borders, List, ListDirection, ListState, Paragraph}, Terminal};
-use todo_rs_tui::todo;
+use tui::Tui;
+use ui::draw;
+
+pub mod todo;
+pub mod app;
+pub mod ui;
+pub mod tui;
+pub mod events;
 
 fn main() -> Result<(), Box<(dyn Error)>>{
     terminal::enable_raw_mode()?;
     execute!(std::io::stdout(), EnterAlternateScreen)?;
 
-    let mut terminal = Terminal::new(CrosstermBackend::new(std::io::stdout()))?;
-    let mut items: Vec<todo::Todo> = todo::list().unwrap();
+    let mut app = App::new()?;
+    let mut tui = Tui::new(Terminal::new(CrosstermBackend::new(std::io::stdout()))?, EventHandler::new(16));
     
-
-    let mut list_state = ListState::default().with_selected(Some(0));
-
     loop {
-        terminal.draw(|f|{
-            let area = f.size();
-            let block = Block::default().title("Todo").borders(Borders::ALL).border_type(ratatui::widgets::BorderType::Rounded);
-
-
-            let list = List::new(items.iter().map(|f|format!("{}", f)))
-                .block(block)
-                .style(Style::default().fg(Color::White))
-                .highlight_style(Style::default().add_modifier(Modifier::BOLD))
-                .highlight_symbol(">> ")
-                .repeat_highlight_symbol(true)
-                .direction(ListDirection::TopToBottom);
-
-
-            f.render_stateful_widget(list, area, &mut list_state);
-        })?;
         
-        if let event::Event::Key(e) = event::read()? {
-            match e.code {
-                event::KeyCode::Esc=>{
-                    break;
-                },
-                event::KeyCode::Enter=>{
-                    let item = items.get(list_state.selected().unwrap()).unwrap();
-                    todo::execute_command(todo::TodoCommand::Toggle((item.id, item.marked)))?;
-                    items = todo::list().unwrap();
-                },
-                event::KeyCode::Up=>{
-                    let index = list_state.selected().unwrap();
-                    if let Some(res) = index.checked_sub(1) {
-                        list_state.select(Some(res));
-                    }else{
-                        list_state.select(Some(items.len()-1));
+        match tui.events.next()? {
+            tui::Event::Key(e)=>{
+
+                match e.code {
+                    event::KeyCode::Esc=>{
+                        break;
+                    },
+                    event::KeyCode::Enter=>{
+                        let item = app.todo_list.get(app.todo_list_state.selected().unwrap()).unwrap();
+                        todo::execute_command(todo::TodoCommand::Toggle((item.id, item.marked)))?;
+                        app.update_list()?;
+                    },
+                    event::KeyCode::Up=>{
+                        let index = app.todo_list_state.selected().unwrap();
+                        if let Some(res) = index.checked_sub(1) {
+                            app.todo_list_state.select(Some(res));
+                        }else{
+                            app.todo_list_state.select(Some(app.todo_list.len()-1));
+                        }
+                    },
+                    event::KeyCode::Down=>{
+                        let index = app.todo_list_state.selected().unwrap();
+                        if index+1 < app.todo_list.len(){
+                            app.todo_list_state.select(Some(index+1));
+                        }else{
+                            app.todo_list_state.select(Some(0));
+                        }
+                    },
+                    event::KeyCode::Char('a') =>{
+                        if e.modifiers.contains(KeyModifiers::CONTROL){
+                            // creates new todo
+                        }
                     }
-                },
-                event::KeyCode::Down=>{
-                    let index = list_state.selected().unwrap();
-                    if index+1 < items.len(){
-                        list_state.select(Some(index+1));
-                    }else{
-                        list_state.select(Some(0));
-                    }
-                },
-                _=>{}
+                    _=>{}
+                }
+
+            },
+            tui::Event::Tick=>{
+                draw(&mut tui.terminal, &mut app)?;
             }
         }
-
     }
     
 

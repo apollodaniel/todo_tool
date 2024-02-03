@@ -1,6 +1,4 @@
-pub mod todo{
-
-    use std::process::exit;
+use std::process::exit;
 
     use rusqlite::Connection;
 
@@ -144,5 +142,3 @@ pub mod todo{
             }
         }
     }
-
-}
