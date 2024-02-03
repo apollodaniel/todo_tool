@@ -99,6 +99,16 @@ pub mod todo{
                             return Err(format!("Error unmarking {}.\n{}",id,e));
                         }
                     },
+                    TodoCommand::Toggle((id,marked))=>{
+
+                        let marked_value = if marked{"false"}else{"true"};
+
+                        let result = con.execute(format!("UPDATE todo SET marked={} WHERE id = {}",marked_value,id).as_str(), []);
+                        if let Err(e) = result{
+                            return Err(format!("Error unmarking {}.\n{}",id,e));
+                        }
+
+                    },
                 } 
             },
             Err(e)=>{
@@ -116,6 +126,7 @@ pub mod todo{
         Remove(usize),
         Mark(usize),
         Unmark(usize),
+        Toggle((usize, bool))
     }
 
     pub struct Todo{

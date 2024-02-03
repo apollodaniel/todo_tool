@@ -39,13 +39,8 @@ fn main() -> Result<(), Box<(dyn Error)>>{
                 },
                 event::KeyCode::Enter=>{
                     let item = items.get(list_state.selected().unwrap()).unwrap();
-                    if item.marked {
-                        todo::execute_command(todo::TodoCommand::Unmark(item.id))?;
-                        items = todo::list().unwrap();
-                    }else{
-                        todo::execute_command(todo::TodoCommand::Mark(item.id))?;
-                        items = todo::list().unwrap();
-                    }
+                    todo::execute_command(todo::TodoCommand::Toggle((item.id, item.marked)))?;
+                    items = todo::list().unwrap();
                 },
                 event::KeyCode::Up=>{
                     let index = list_state.selected().unwrap();
