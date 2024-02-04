@@ -1,7 +1,8 @@
 # Todo Tool rs
 
-A user-friendly cli tool to organize your todo, made with Rust, Ratatui, and Sqlite3.
-
+A user-friendly cli tool to organize your todo, made with Rust, Ratatui, and Sqlite3.<br><br>
+This tool is based on my other project made for command line using arguments.<br>
+It can be found [here](https://github.com/apollodaniel/todo_rs)
 
 ### Preview
 ![preview](images/print_001.png)
