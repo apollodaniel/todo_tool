@@ -1,7 +1,6 @@
 use std::error::Error;
 
 use app::{App, AppState};
-use crossterm::{execute, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}};
 use events::EventHandler;
 use ratatui::{backend::CrosstermBackend, Terminal};
 use tui::Tui;
