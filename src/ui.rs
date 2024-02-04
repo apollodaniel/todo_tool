@@ -1,6 +1,6 @@
 use std::{error::Error, io::Stdout};
 
-use ratatui::{backend::CrosstermBackend, layout::{Constraint, Layout}, style::{Color, Modifier, Style}, widgets::{Block, Borders, List, ListDirection}, Terminal};
+use ratatui::{backend::CrosstermBackend, layout::{Constraint, Layout}, style::{Color, Modifier, Style, Stylize}, widgets::{Block, Borders, List, ListDirection, Paragraph, Wrap}, Terminal};
 use tui_textarea::TextArea;
 
 use crate::{app::{App, AppState}, tui::CrosstermTerminal};
@@ -17,10 +17,13 @@ pub fn draw_new_todo(terminal: &mut CrosstermTerminal, text_area: &mut TextArea)
                 Constraint::Fill(1),
                 Constraint::Length(3),
                 Constraint::Fill(1),
+                Constraint::Length(3),
             ]
         ).split(area);
 
+        
         f.render_widget(text_area.widget(), layout[1]);
+        f.render_widget(Paragraph::new("Ctrl+x - Exit | Esc/Control+a - Cancel | Enter - Save").bold().wrap(Wrap{trim:true}), layout[3]);
     })?;
 
     Ok(())
@@ -29,6 +32,15 @@ pub fn draw_new_todo(terminal: &mut CrosstermTerminal, text_area: &mut TextArea)
 pub fn draw_todo_list(terminal: &mut CrosstermTerminal, app: &mut App)-> Result<(), Box<(dyn Error)>>{
     terminal.draw(|f|{
         let area = f.size();
+
+        let layout = Layout::new(
+            ratatui::layout::Direction::Vertical,
+            [
+                Constraint::Fill(1),
+                Constraint::Length(3),
+            ]
+        ).split(area);
+
         let block = Block::default().title("Todo").borders(Borders::ALL);
 
 
@@ -41,7 +53,8 @@ pub fn draw_todo_list(terminal: &mut CrosstermTerminal, app: &mut App)-> Result<
             .direction(ListDirection::TopToBottom);
 
 
-        f.render_stateful_widget(list, area, &mut app.todo_list_state);
+        f.render_stateful_widget(list, layout[0], &mut app.todo_list_state);
+        f.render_widget(Paragraph::new("Ctrl+x - Exit | Ctrl+d - Delete selection | Ctrl+a - add | Enter - Mark/Unmark").bold().wrap(Wrap{trim:true}), layout[1]);
     })?;
     Ok(())
 }

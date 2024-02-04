@@ -19,20 +19,20 @@ impl EventHandler {
         let (sender, receiver): (Sender<Event>,Receiver<Event>) = channel();
 
         {
-            let sender_clone = sender.clone();
+            let sender_clone = Sender::clone(&sender);
             thread::spawn(move||{
                 let mut last_tick = Instant::now();
-
+                
                 loop {                   
                     if last_tick.elapsed()>=tick_rate{
                         sender_clone.send(Event::Tick).expect("unable to send tick event");
                         last_tick = Instant::now();
                     }
                 }
-
+                
             });
-
-            let sender_clone = sender.clone();
+            
+            let sender_clone = Sender::clone(&sender);
             thread::spawn(move||{
                 let mut last_tick = Instant::now();
 
