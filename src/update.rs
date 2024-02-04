@@ -30,7 +30,12 @@ pub fn update_list_state(input: &Input,app: &mut App, app_state: &mut AppState)-
                 app.todo_list_state.select(Some(0));
             }
         },
-        
+        Input{key: Key::Char('d'), ctrl: true, alt:false,shift:false}=>{
+            let item = app.todo_list.get(app.todo_list_state.selected().unwrap()).unwrap();
+
+            todo::execute_command(todo::TodoCommand::Remove(item.id))?;
+            app.update_list()?;
+        },
         Input { key: Key::Char('a'), ctrl: true, alt:false, shift:false } =>{
             // go to new todo app state
 
@@ -55,7 +60,7 @@ pub fn update_new_todo_state(input: &Input,app: &mut App, app_state: &mut AppSta
                 *app_state = AppState::TodoList;
             }
         },
-        Input { key: Key::Char('d'), ctrl: true, alt:false, shift:false } | Input { key: Key::Esc, .. } =>{
+        Input { key: Key::Char('l'), ctrl: true, alt:false, shift:false } | Input { key: Key::Esc, .. } =>{
             // go to new todo app state
             *app_state = AppState::TodoList;
         },

@@ -29,7 +29,7 @@ pub fn draw_new_todo(terminal: &mut CrosstermTerminal, app: &mut App, text_area:
 pub fn draw_todo_list(terminal: &mut CrosstermTerminal, app: &mut App)-> Result<(), Box<(dyn Error)>>{
     terminal.draw(|f|{
         let area = f.size();
-        let block = Block::default().title("Todo").borders(Borders::ALL).border_type(ratatui::widgets::BorderType::Rounded);
+        let block = Block::default().title("Todo").borders(Borders::ALL);
 
 
         let list = List::new(app.todo_list.iter().map(|f|format!("{}", f)))
