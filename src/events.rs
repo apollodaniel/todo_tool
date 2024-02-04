@@ -1,9 +1,12 @@
 use std::{sync::mpsc::{channel, Receiver, Sender}, thread, time::{Duration, Instant}};
 
 use crossterm::event::{self, KeyEvent};
+use tui_textarea::Input;
 
-use crate::tui::Event;
-
+pub enum Event{
+    Tick,
+    Key(Input),
+}
 pub struct EventHandler{
     receiver: Receiver<Event>,
 }
@@ -28,7 +31,7 @@ impl EventHandler {
                     if event::poll(timeout).expect("unable to pool event"){
                         match event::read().expect("unable to read event") {
                             event::Event::Key(e)=>{
-                                sender.send(Event::Key(e)).expect("unable to send key event");
+                                sender.send(Event::Key(e.into())).expect("unable to send key event");
                             },
                             _=>{}
                         }
