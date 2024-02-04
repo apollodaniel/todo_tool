@@ -16,9 +16,8 @@ pub mod events;
 pub mod update;
 
 fn main() -> Result<(), Box<(dyn Error)>>{
-    terminal::enable_raw_mode()?;
-    execute!(std::io::stdout(), EnterAlternateScreen)?;
-
+    Tui::enter()?;
+    
     let mut app = App::new()?;
     let mut app_state = AppState::TodoList;
     let mut tui = Tui::new(Terminal::new(CrosstermBackend::new(std::io::stdout()))?, EventHandler::new(16));
@@ -34,11 +33,8 @@ fn main() -> Result<(), Box<(dyn Error)>>{
             }
         }
     }
-    
 
-    terminal::disable_raw_mode()?;
-    execute!(std::io::stdout(), LeaveAlternateScreen)?;
-
+    Tui::reset()?;
 
     Ok(())
 }
