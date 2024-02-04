@@ -10,31 +10,38 @@ use crate::{app::{App, AppState}, todo};
 pub fn update_list_state(input: &Input,app: &mut App, app_state: &mut AppState)->Result<(), Box<dyn Error>>{
     match input {
         Input{key: Key::Enter, ..}=>{
-            let item = app.todo_list.get(app.todo_list_state.selected().unwrap()).unwrap();
-            todo::execute_command(todo::TodoCommand::Toggle((item.id, item.marked)))?;
-            app.update_list()?;
+            let item = app.todo_list.get(app.todo_list_state.selected().unwrap());
+            if let Some(item) = item {
+                todo::execute_command(todo::TodoCommand::Toggle((item.id, item.marked)))?;
+                app.update_list()?;    
+            }
         },
         Input{key: Key::Up, ..}=>{
-            let index = app.todo_list_state.selected().unwrap();
-            if let Some(res) = index.checked_sub(1) {
-                app.todo_list_state.select(Some(res));
-            }else{
-                app.todo_list_state.select(Some(app.todo_list.len()-1));
+            let index = app.todo_list_state.selected();
+            if let Some(index) = index  {
+                if let Some(res) = index.checked_sub(1) {
+                    app.todo_list_state.select(Some(res));
+                }else{
+                    app.todo_list_state.select(Some(app.todo_list.len()-1));
+                }    
             }
         },
         Input{key: Key::Down, ..}=>{
-            let index = app.todo_list_state.selected().unwrap();
-            if index+1 < app.todo_list.len(){
-                app.todo_list_state.select(Some(index+1));
-            }else{
-                app.todo_list_state.select(Some(0));
+            let index = app.todo_list_state.selected();
+            if let Some(index) = index  {
+                if index+1 < app.todo_list.len(){
+                    app.todo_list_state.select(Some(index+1));
+                }else{
+                    app.todo_list_state.select(Some(0));
+                }
             }
         },
         Input{key: Key::Char('d'), ctrl: true, alt:false,shift:false}=>{
-            let item = app.todo_list.get(app.todo_list_state.selected().unwrap()).unwrap();
-
-            todo::execute_command(todo::TodoCommand::Remove(item.id))?;
-            app.update_list()?;
+            let item = app.todo_list.get(app.todo_list_state.selected().unwrap());
+            if let Some(item) = item {
+                todo::execute_command(todo::TodoCommand::Remove(item.id))?;
+                app.update_list()?;
+            }
         },
         Input { key: Key::Char('a'), ctrl: true, alt:false, shift:false } =>{
             // go to new todo app state
