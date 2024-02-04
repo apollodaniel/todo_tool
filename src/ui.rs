@@ -19,9 +19,6 @@ pub fn draw_new_todo(terminal: &mut CrosstermTerminal, app: &mut App, text_area:
                 Constraint::Fill(1),
             ]
         ).split(area);
-        let block = Block::default().title("New todo").borders(Borders::ALL).border_type(ratatui::widgets::BorderType::Rounded);
-
-
 
         f.render_widget(text_area.widget(), layout[1]);
     })?;

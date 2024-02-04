@@ -1,5 +1,6 @@
 use std::error::Error;
 
+use ratatui::widgets::{Block, Borders, Padding};
 use tui_textarea::{Input, Key, TextArea};
 
 use crate::{app::{self, App, AppState}, todo};
@@ -32,17 +33,27 @@ pub fn update_list_state(input: &Input,app: &mut App, app_state: &mut AppState)-
         
         Input { key: Key::Char('a'), ctrl: true, alt:false, shift:false } =>{
             // go to new todo app state
-            *app_state = AppState::NewTodo(TextArea::default());
+
+            let block = Block::new().title("New todo").borders(Borders::ALL).padding(Padding::horizontal(1));
+            let mut text_area = TextArea::new(Vec::new());
+            text_area.set_block(block);
+
+            *app_state = AppState::NewTodo(text_area);
         }
         _=>{}
     }
     Ok(())
 }
 
-pub fn update_new_todo_state(input: &Input,app: &mut App, app_state: &mut AppState){
+pub fn update_new_todo_state(input: &Input,app: &mut App, app_state: &mut AppState) -> Result<(), Box<(dyn Error)>>{
     match input {
-        Input{key: Key::Enter, ..}=>{
+        Input{key: Key::Enter, ..} | Input{ctrl: true, key: Key::Char('m'),alt:false,shift:false}=>{
             // finish
+            if let AppState::NewTodo(text_area) = app_state {
+                todo::execute_command(todo::TodoCommand::Add(text_area.lines().first().unwrap()))?;
+                app.update_list()?;
+                *app_state = AppState::TodoList;
+            }
         },
         Input { key: Key::Char('d'), ctrl: true, alt:false, shift:false } | Input { key: Key::Esc, .. } =>{
             // go to new todo app state
@@ -54,6 +65,8 @@ pub fn update_new_todo_state(input: &Input,app: &mut App, app_state: &mut AppSta
             }
         },
     }
+
+    Ok(())
 }
 
 pub fn update(input: &Input, app: &mut App, app_state: &mut AppState)->Result<(), Box<dyn Error>>{
@@ -67,7 +80,7 @@ pub fn update(input: &Input, app: &mut App, app_state: &mut AppState)->Result<()
     }
 
     match app_state {
-        AppState::NewTodo(e) => update_new_todo_state(input, app, app_state),
+        AppState::NewTodo(_) => update_new_todo_state(input, app, app_state)?,
         AppState::TodoList=>update_list_state(input, app, app_state)?
     }
     
