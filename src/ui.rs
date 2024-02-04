@@ -17,13 +17,13 @@ pub fn draw_new_todo(terminal: &mut CrosstermTerminal, text_area: &mut TextArea)
                 Constraint::Fill(1),
                 Constraint::Length(3),
                 Constraint::Fill(1),
-                Constraint::Length(3),
+                Constraint::Length(1),
             ]
         ).split(area);
 
         
         f.render_widget(text_area.widget(), layout[1]);
-        f.render_widget(Paragraph::new("Ctrl+x - Exit | Esc/Control+a - Cancel | Enter - Save").bold().wrap(Wrap{trim:true}), layout[3]);
+        f.render_widget(Paragraph::new("Ctrl+x - Exit | Esc - Cancel | Enter - Save").alignment(ratatui::layout::Alignment::Center).bold().wrap(Wrap{trim:true}), layout[3]);
     })?;
 
     Ok(())
@@ -37,7 +37,7 @@ pub fn draw_todo_list(terminal: &mut CrosstermTerminal, app: &mut App)-> Result<
             ratatui::layout::Direction::Vertical,
             [
                 Constraint::Fill(1),
-                Constraint::Length(3),
+                Constraint::Length(1),
             ]
         ).split(area);
 
@@ -54,7 +54,7 @@ pub fn draw_todo_list(terminal: &mut CrosstermTerminal, app: &mut App)-> Result<
 
 
         f.render_stateful_widget(list, layout[0], &mut app.todo_list_state);
-        f.render_widget(Paragraph::new("Ctrl+x - Exit | Ctrl+d - Delete selection | Ctrl+a - add | Enter - Mark/Unmark").bold().wrap(Wrap{trim:true}), layout[1]);
+        f.render_widget(Paragraph::new("Ctrl+x - Exit | Ctrl+d - Delete selection | Ctrl+a - add | Enter - Mark/Unmark").alignment(ratatui::layout::Alignment::Center).bold().wrap(Wrap{trim:true}), layout[1]);
     })?;
     Ok(())
 }
