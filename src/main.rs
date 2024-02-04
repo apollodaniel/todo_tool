@@ -1,11 +1,10 @@
-use std::{borrow::BorrowMut, error::Error};
+use std::error::Error;
 
 use app::{App, AppState};
-use crossterm::{event::{self, KeyEvent, KeyModifiers}, execute, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}};
+use crossterm::{execute, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}};
 use events::EventHandler;
-use ratatui::{backend::CrosstermBackend, style::{Color, Modifier, Style}, widgets::{Block, Borders, List, ListDirection, ListState, Paragraph}, Terminal};
+use ratatui::{backend::CrosstermBackend, Terminal};
 use tui::Tui;
-use tui_textarea::{Input, Key};
 use ui::draw;
 use update::update;
 

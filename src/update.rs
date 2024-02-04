@@ -3,7 +3,7 @@ use std::error::Error;
 use ratatui::widgets::{Block, Borders, Padding};
 use tui_textarea::{Input, Key, TextArea};
 
-use crate::{app::{self, App, AppState}, todo};
+use crate::{app::{App, AppState}, todo};
 
 
 

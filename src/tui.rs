@@ -1,8 +1,7 @@
 use std::{error::Error, io::Stdout, panic};
 
-use crossterm::{event::KeyEvent, execute, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}};
+use crossterm::{execute, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}};
 use ratatui::{backend::CrosstermBackend, Terminal};
-use tui_textarea::Input;
 
 use crate::events::EventHandler;
 

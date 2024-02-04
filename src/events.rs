@@ -1,6 +1,6 @@
 use std::{sync::mpsc::{channel, Receiver, Sender}, thread, time::{Duration, Instant}};
 
-use crossterm::event::{self, KeyEvent};
+use crossterm::event;
 use tui_textarea::Input;
 
 pub enum Event{

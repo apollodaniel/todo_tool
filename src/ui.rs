@@ -7,7 +7,7 @@ use crate::{app::{App, AppState}, tui::CrosstermTerminal};
 
 
 
-pub fn draw_new_todo(terminal: &mut CrosstermTerminal, app: &mut App, text_area: &mut TextArea)-> Result<(), Box<(dyn Error)>>{
+pub fn draw_new_todo(terminal: &mut CrosstermTerminal, text_area: &mut TextArea)-> Result<(), Box<(dyn Error)>>{
 
     terminal.draw(|f|{
         let area = f.size();
@@ -48,7 +48,7 @@ pub fn draw_todo_list(terminal: &mut CrosstermTerminal, app: &mut App)-> Result<
 
 pub fn draw(terminal: &mut Terminal<CrosstermBackend<Stdout>>, app: &mut App, app_state: &mut AppState)->Result<(),Box<(dyn Error)>>{
     match app_state{
-        crate::app::AppState::NewTodo(e) => draw_new_todo(terminal,app, e)?,
+        crate::app::AppState::NewTodo(e) => draw_new_todo(terminal, e)?,
         crate::app::AppState::TodoList => draw_todo_list(terminal, app)?
     }
     Ok(())
